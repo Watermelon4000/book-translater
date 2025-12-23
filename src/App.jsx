@@ -3,6 +3,7 @@ import { FileUpload } from './components/FileUpload';
 import { TranslationView } from './components/TranslationView';
 import { parseEpub } from './lib/epub-parser';
 import { Languages } from 'lucide-react';
+import mascot from './assets/mascot.png';
 
 function App() {
   const [book, setBook] = useState(null);
@@ -44,17 +45,25 @@ function App() {
       {/* Main Content */}
       <main className="pt-32 px-6 max-w-7xl mx-auto pb-20">
         {!book ? (
-          <div className="flex flex-col items-center justify-center min-h-[60vh] gap-12 animate-ink-flow">
-            <div className="text-center space-y-4 max-w-xl">
-              <h1 className="text-4xl md:text-5xl font-bold text-ink-900 tracking-tight leading-tight">
-                Translate Books with <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-ink-800 to-ink-500">
-                  Nuance & Context
-                </span>
-              </h1>
-              <p className="text-ink-500 text-lg leading-relaxed">
-                AI-powered translation that preserves structure, formatting, and the soul of the story.
-              </p>
+          <div className="flex flex-col items-center justify-center min-h-[60vh] gap-8 animate-ink-flow">
+            {/* Mascot & Title */}
+            <div className="flex flex-col items-center text-center space-y-6 max-w-xl">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-cinnabar rounded-full blur-2xl opacity-10 group-hover:opacity-20 transition-opacity"></div>
+                <img src={mascot} alt="InkTranslate Mascot" className="w-32 h-32 relative z-10 pixelated drop-shadow-lg" style={{ imageRendering: 'pixelated' }} />
+              </div>
+
+              <div className="space-y-4">
+                <h1 className="text-4xl md:text-5xl font-bold text-ink-900 tracking-tight leading-tight">
+                  Translate Books with <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-ink-800 to-ink-500">
+                    Nuance & Context
+                  </span>
+                </h1>
+                <p className="text-ink-500 text-lg leading-relaxed">
+                  AI-powered translation that preserves structure, formatting, and the soul of the story.
+                </p>
+              </div>
             </div>
 
             <FileUpload onFileSelect={handleFileSelect} isProcessing={isProcessing} />
