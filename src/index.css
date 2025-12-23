@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-paper text-ink-900 font-serif antialiased;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+  }
+
+  /* Custom Scrollbar for Webkit */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-ink-200 rounded-full hover:bg-ink-400 transition-colors;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-4 py-2 bg-ink-900 text-paper rounded-md hover:bg-ink-800 active:scale-95 transition-all shadow-md font-medium tracking-wide flex items-center justify-center gap-2;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 border border-ink-200 text-ink-700 rounded-md hover:bg-ink-50 active:scale-95 transition-all font-medium flex items-center justify-center gap-2;
+  }
+
+  .card-shuimo {
+    @apply bg-white/80 backdrop-blur-sm border border-ink-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300;
+  }
+
+  .in-input {
+    @apply w-full px-4 py-2 bg-transparent border-b border-ink-200 focus:border-ink-900 outline-none transition-colors placeholder:text-ink-300;
+  }
+}
