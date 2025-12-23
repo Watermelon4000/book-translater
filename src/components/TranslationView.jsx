@@ -37,11 +37,9 @@ export function TranslationView({ book, onReset }) {
                 });
 
                 // Save translated content back to zip (in memory)
-                // Note: For now we just overwrite the file in the JSZip object in memory
-                book.files[chapter.href].file(chapter.href, translatedHtml); // Updating the file content? JSZip is tricky.
-                // Actually: zip.file(path, content) updates it.
-                // We need to ensure path is relative to zip root. chapter.href is fully resolved now.
-                book.files.file(chapter.href, translatedHtml);
+                // Save translated content back to zip (in memory)
+                // Use the JSZip instance to update the file content
+                book.zip.file(chapter.href, translatedHtml);
 
                 setChapterStatus(prev => ({ ...prev, [chapter.href]: 'done' }));
                 completedChapters++;
@@ -57,7 +55,7 @@ export function TranslationView({ book, onReset }) {
 
     const handleDownload = async () => {
         // Generate blob
-        const blob = await book.files.generateAsync({ type: "blob", mimeType: "application/epub+zip" });
+        const blob = await book.zip.generateAsync({ type: "blob", mimeType: "application/epub+zip" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;

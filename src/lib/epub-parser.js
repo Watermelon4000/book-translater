@@ -37,6 +37,7 @@ export async function parseEpub(file) {
         metadata,
         spine,
         files: zip.files, // Keep reference to raw files for reading later
+        zip, // Return the JSZip instance for writing
     };
 }
 
