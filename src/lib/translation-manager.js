@@ -28,19 +28,23 @@ export class TranslationManager {
         const translations = [];
         const total = chunks.length;
         let completed = 0;
+        let failed = 0;
 
         // Helper for concurrency
         const processChunk = async (chunk) => {
             if (this.abortController.signal.aborted) throw new Error("Aborted");
             try {
                 const results = await this.translator.translateChunk(chunk.text);
-                translations.push(...results);
+                if (results && Array.isArray(results)) {
+                    translations.push(...results);
+                }
                 completed++;
-                if (onProgress) onProgress(Math.round((completed / total) * 100));
             } catch (err) {
                 console.error(`Chunk failed`, err);
-                // Retry logic could go here. For now, we skip/fail.
+                failed++;
+                completed++; // Still count as processed for progress bar
             }
+            if (onProgress) onProgress(Math.round((completed / total) * 100));
         };
 
         // Simple batching: run 2 at a time
@@ -52,6 +56,14 @@ export class TranslationManager {
 
         // 4. Reassemble
         const finalHtml = injectTranslations(modifiedHtmlString, translations);
-        return finalHtml;
+        return {
+            translatedHtml: finalHtml,
+            stats: {
+                totalChunks: total,
+                failedChunks: failed,
+                successfulChunks: total - failed
+            }
+        };
     }
 }
+```
