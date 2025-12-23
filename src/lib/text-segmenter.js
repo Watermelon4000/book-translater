@@ -25,13 +25,22 @@ export function segmentChapter(htmlString) {
         // Skip scripts, styles
         if (tag === 'script' || tag === 'style') return;
 
-        // If it's a text container, add it to chunk
-        if (['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'blockquote', 'div'].includes(tag)) {
-            // Verify it has text content (skip empty spacers)
+        // Determine if this is a "Translation Unit" candidate
+        // A unit is a block that contains text.
+        // If a P tag has a SPAN inside, we want to translate the whole P tag.
+        // If a DIV wraps multiple Ps, we want to descend into the DIV.
+
+        const isBlockCandidate = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'blockquote'].includes(tag);
+
+        // Check if the node has 'direct' or 'meaningful' text content worthy of preserving as a block
+        // We want to avoid splitting a sentence interrupted by a span.
+        // So if it's a P, we take it whole.
+        // But if it's a DIV, does it represent a block or a container?
+        // Heuristic: If it's a P/Heading/LI, always treat as unit.
+        if (isBlockCandidate) {
             const text = node.textContent?.trim();
             if (!text) {
-                // Recursively check if it's a wrapper div
-                Array.from(node.children).forEach(processNode);
+                // Empty block? Skip.
                 return;
             }
 
@@ -39,10 +48,9 @@ export function segmentChapter(htmlString) {
             const id = `tid-${Math.random().toString(36).substr(2, 9)}`;
             node.setAttribute('data-translate-id', id);
 
-            // Append to current chunk
             const entrySize = text.length;
 
-            // If adding this node exceeds limit, push current chunk first
+            // Chunking Logic
             if (currentChunk.text.length + entrySize > MAX_CHUNK_SIZE && currentChunk.ids.length > 0) {
                 chunks.push({
                     ids: currentChunk.ids,
@@ -52,10 +60,11 @@ export function segmentChapter(htmlString) {
             }
 
             currentChunk.ids.push(id);
-            // We use a special delimiter for the AI to recognize segments
             currentChunk.text += `<${tag} id="${id}">${node.innerHTML}</${tag}>\n`;
         } else {
-            // Recurse for generic containers (section, article, etc)
+            // For DIVs, Sections, etc., we usually want to recurse unless they are leaf-like.
+            // But some DIVs are just P substitutes.
+            // Strategy: Recurse into generic containers.
             if (node.children?.length) {
                 Array.from(node.children).forEach(processNode);
             }
